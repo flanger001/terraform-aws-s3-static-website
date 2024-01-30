@@ -128,7 +128,7 @@ resource "aws_cloudfront_origin_access_control" "access_control" {
 
 resource "aws_cloudfront_function" "function" {
   code = templatefile(
-    "./function.tftpl",
+    "${path.module}/function.tftpl",
     {
       redirectable_domains = var.redirectable_domains
       domain_name          = var.canonical_domain_name
