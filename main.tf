@@ -135,7 +135,7 @@ resource "aws_cloudfront_function" "function" {
     }
   )
   comment = null
-  name    = var.function_name
+  name    = var.cloudfront_function_name
   publish = true
   runtime = "cloudfront-js-1.0"
 }

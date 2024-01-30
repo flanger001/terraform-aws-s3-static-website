@@ -22,7 +22,7 @@ variable "domain_aliases" {
   nullable    = false
 }
 
-variable "function_name" {
+variable "cloudfront_function_name" {
   type        = string
   description = "Name for CloudFront function, e.g. MyFunction"
   nullable    = false
