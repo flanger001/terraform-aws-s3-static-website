@@ -1,0 +1,34 @@
+var handler = (event) => {
+    var request = event.request
+    var redirectableDomains = [
+%{for domain in redirectable_domains ~}
+        "${domain}",
+%{endfor ~}
+    ]
+
+    var hostIsRedirectable = redirectableDomains.some((domain) => request.headers.host.value === domain)
+
+    if (hostIsRedirectable) {
+        var url = `https://${domain_name}$${request.uri}`;
+
+        var response = {
+            statusCode: 302,
+            statusDescription: "Found",
+            headers: {
+                location: { value: url }
+            },
+            cookies: request.cookies
+        }
+
+        return response;
+    }
+
+    var oldUri = request.uri
+    var newUri = oldUri.replace(/\/$/, "/index.html")
+    console.log("Old URI: " + oldUri)
+    console.log("New URI: " + newUri)
+
+    request.uri = newUri
+
+    return request;
+}
