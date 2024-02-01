@@ -7,7 +7,8 @@ variable "bucket_name" {
 variable "application" {
   type        = string
   description = "Name of the actual application, e.g. My Bucket website"
-  nullable    = false
+  nullable    = true
+  default     = "My Static Website"
 }
 
 variable "canonical_domain_name" {
@@ -18,8 +19,17 @@ variable "canonical_domain_name" {
 
 variable "domain_aliases" {
   type        = list(string)
-  description = "List of domain name aliases for the site, e.g. [\"mybucket.com\", \"my.bucket.com\"]"
+  description = <<-DOC
+    List of domain name aliases for the site, e.g. ["mybucket.com", "my.bucket.com"].
+
+    This must contain at least the primary domain name for the site.
+  DOC
   nullable    = false
+
+  validation {
+    condition     = length(var.domain_aliases) > 0
+    error_message = "Must add at least one domain name alias"
+  }
 }
 
 variable "cloudfront_function_name" {
@@ -30,8 +40,13 @@ variable "cloudfront_function_name" {
 
 variable "redirectable_domains" {
   type        = list(string)
-  description = "List of redirectable domains for the site, e.g. [\"mybucket.com\", \"my.bucket.com\"]"
-  nullable    = false
+  description = <<-DOC
+    List of redirectable domains for the site, e.g. ["mybucket.com", "my.bucket.com"]
+
+    Not required if you are not doing apex redirection.
+  DOC
+  nullable    = true
+  default     = []
 }
 
 variable "route53_domain_name" {

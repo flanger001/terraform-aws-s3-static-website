@@ -1,5 +1,6 @@
 var handler = (event) => {
     var request = event.request
+    %{if redirectable_domains != null}
     var redirectableDomains = [
 %{for domain in redirectable_domains ~}
         "${domain}",
@@ -22,6 +23,7 @@ var handler = (event) => {
 
         return response;
     }
+    %{endif}
 
     var oldUri = request.uri
     var newUri = oldUri.replace(/\/$/, "/index.html")

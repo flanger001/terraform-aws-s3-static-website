@@ -142,7 +142,7 @@ resource "aws_cloudfront_function" "function" {
 
 # Route53
 resource "aws_route53_record" "a" {
-  count           = length(var.redirectable_domains) == 0 ? 0 : 1
+  count           = var.redirectable_domains == null ? 0 : length(var.redirectable_domains) == 0 ? 0 : 1
   allow_overwrite = null
   health_check_id = null
   name            = var.route53_domain_name
