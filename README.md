@@ -21,7 +21,6 @@ This module will create these AWS resources:
 - `aws_route53_record.a` (optional, if `redirectable_domains` are supplied)
     This enables apex redirection to another subdomain if desired, e.g. https://example.com/ -> https://www.example.com/
 
-
 This module depends on these AWS resources existing:
 
 - An AWS account (`data.aws_caller_identity.account`).
