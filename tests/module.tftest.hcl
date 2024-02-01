@@ -29,8 +29,8 @@ run "creates_infrastructure" {
   }
 
   assert {
-    condition     = contains(
-      aws_cloudfront_distribution.origin[*].origin_access_control_id,
+    condition = contains(
+      aws_cloudfront_distribution.distribution.origin[*].origin_access_control_id,
       aws_cloudfront_origin_access_control.access_control.id
     )
     error_message = "Cloudfront origin access control not linked to Cloudfront distribution"
@@ -52,7 +52,7 @@ run "creates_infrastructure" {
   }
 
   assert {
-    condition     = contains(
+    condition = contains(
       aws_route53_record.cname.records,
       aws_cloudfront_distribution.distribution.domain_name
     )
