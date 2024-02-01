@@ -134,10 +134,10 @@ resource "aws_cloudfront_function" "function" {
       domain_name          = var.canonical_domain_name
     }
   )
-  comment = null
+  comment = "Directory serving index.html and subdomain redirection function for ${var.application}"
   name    = var.cloudfront_function_name
   publish = true
-  runtime = "cloudfront-js-1.0"
+  runtime = "cloudfront-js-2.0"
 }
 
 # Route53

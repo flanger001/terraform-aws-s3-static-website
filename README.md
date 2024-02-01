@@ -15,7 +15,7 @@ This module will create these AWS resources:
 - `aws_cloudfront_origin_access_control.access_control`
     This defines the routing rules for the origin on the distibution.
 - `aws_cloudfront_function.function`
-    This enables serving an `index.html` file at the root of a directory URL as that URL, e.g. https://www.example.com/users/index.html is served as https://www.example.com/users/.
+    This enables serving an `index.html` file at the root of a directory URL as that URL (e.g. https://www.example.com/users/index.html is served as https://www.example.com/users/), as well as subdomain redirection.
 - `aws_route53_record.cname`
     This enables DNS lookup of the site.
 - `aws_route53_record.a` (optional, if `redirectable_domains` are supplied)

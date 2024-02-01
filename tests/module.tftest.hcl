@@ -37,8 +37,8 @@ run "creates_infrastructure" {
   }
 
   assert {
-    condition     = aws_cloudfront_function.function.runtime == "cloudfront-js-1.0"
-    error_message = "Runtime is not equal to \"cloudfront-js-1.0\""
+    condition     = aws_cloudfront_function.function.runtime == "cloudfront-js-2.0"
+    error_message = "Runtime is not equal to \"cloudfront-js-2.0\""
   }
 
   assert {
