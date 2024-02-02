@@ -171,7 +171,7 @@ resource "aws_route53_record" "cname" {
 data "aws_caller_identity" "account" {}
 
 data "aws_acm_certificate" "certificate" {
-  domain = var.route53_domain_name
+  domain = var.certificate_name
 }
 
 data "aws_route53_zone" "zone" {

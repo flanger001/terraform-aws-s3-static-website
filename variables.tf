@@ -17,6 +17,12 @@ variable "canonical_domain_name" {
   nullable    = false
 }
 
+variable "certificate_name" {
+  type        = string
+  description = "ACM certificate name, e.g. example.com"
+  nullable    = false
+}
+
 variable "cloudfront_function_name" {
   type        = string
   description = "Name for CloudFront function, e.g. MyFunction"
