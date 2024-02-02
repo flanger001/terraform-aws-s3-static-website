@@ -1,9 +1,3 @@
-variable "bucket_name" {
-  type        = string
-  description = "Name of the bucket, e.g. my-bucket"
-  nullable    = false
-}
-
 variable "application" {
   type        = string
   description = "Name of the actual application, e.g. My Bucket website"
@@ -11,9 +5,21 @@ variable "application" {
   default     = "My Static Website"
 }
 
+variable "bucket_name" {
+  type        = string
+  description = "Name of the bucket, e.g. my-bucket"
+  nullable    = false
+}
+
 variable "canonical_domain_name" {
   type        = string
   description = "Deployed domain name, e.g. www.mybucket.com"
+  nullable    = false
+}
+
+variable "cloudfront_function_name" {
+  type        = string
+  description = "Name for CloudFront function, e.g. MyFunction"
   nullable    = false
 }
 
@@ -30,12 +36,6 @@ variable "domain_aliases" {
     condition     = length(var.domain_aliases) > 0
     error_message = "Must add at least one domain name alias"
   }
-}
-
-variable "cloudfront_function_name" {
-  type        = string
-  description = "Name for CloudFront function, e.g. MyFunction"
-  nullable    = false
 }
 
 variable "redirectable_domains" {
