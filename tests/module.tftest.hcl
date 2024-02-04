@@ -49,3 +49,25 @@ run "creates_infrastructure" {
     error_message = "Route53 record value does not match Cloudfront distribution domain name"
   }
 }
+
+run "separates_a_records" {
+  command = plan
+
+  variables {
+    bucket_name              = "flanger001-test-mybucket"
+    certificate_name         = "daveshaffer.com"
+    cloudfront_function_name = "Flanger001-Test-MyFunction"
+    domains = [
+      "daveshaffer.co",
+      "daveshaffer.com",
+      "www.daveshaffer.co",
+      "www.daveshaffer.com"
+    ]
+    primary_domain = "www.daveshaffer.com"
+  }
+
+  assert {
+    condition     = length(aws_route53_record.aliases) == 2
+    error_message = "Too many aliases"
+  }
+}

@@ -22,6 +22,10 @@ output "records" {
   value = aws_route53_record.records
 }
 
+output "aliases" {
+  value = aws_route53_record.aliases
+}
+
 output "zones" {
   value = data.aws_route53_zone.zones
 }

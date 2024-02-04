@@ -143,7 +143,9 @@ resource "aws_cloudfront_function" "function" {
 # Route53
 resource "aws_route53_record" "records" {
   for_each = {
-    for zone_record in module.records.zones : "${zone_record.zone}_${zone_record.record}_${zone_record.record_type}" => zone_record
+    for zone_record in module.records.zones :
+    "${zone_record.zone}_${zone_record.record}_${zone_record.record_type}" => zone_record
+    if zone_record.record_type != "A"
   }
   allow_overwrite = null
   health_check_id = null
@@ -153,15 +155,24 @@ resource "aws_route53_record" "records" {
   ttl             = local.ttl.short
   type            = each.value.record_type
   zone_id         = data.aws_route53_zone.zones[each.value.zone].id
+}
 
-  dynamic "alias" {
-    for_each = [for v in each.value : v if lookup(each.value, "record_type", null) == "A"]
+resource "aws_route53_record" "aliases" {
+  for_each = {
+    for zone_record in module.records.zones : "${zone_record.zone}_${zone_record.record}_${zone_record.record_type}" => zone_record
+    if zone_record.record_type == "A"
+  }
+  allow_overwrite = null
+  health_check_id = null
+  name            = each.value.record
+  set_identifier  = null
+  type            = "A"
+  zone_id         = data.aws_route53_zone.zones[each.value.zone].id
 
-    content {
-      evaluate_target_health = true
-      name                   = aws_cloudfront_distribution.distribution.domain_name
-      zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
-    }
+  alias {
+    evaluate_target_health = true
+    name                   = aws_cloudfront_distribution.distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
   }
 }
 
