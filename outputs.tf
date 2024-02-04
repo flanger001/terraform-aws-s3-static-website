@@ -18,10 +18,10 @@ output "function" {
   value = aws_cloudfront_function.function
 }
 
-output "a" {
-  value = aws_route53_record.a
+output "records" {
+  value = aws_route53_record.records
 }
 
-output "cname" {
-  value = aws_route53_record.cname
+output "zones" {
+  value = data.aws_route53_zone.zones
 }

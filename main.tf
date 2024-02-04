@@ -39,7 +39,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 
 # Cloudfront
 resource "aws_cloudfront_distribution" "distribution" {
-  aliases                         = var.domain_aliases
+  aliases                         = var.domains
   comment                         = var.application
   continuous_deployment_policy_id = null
   default_root_object             = "index.html"
@@ -130,8 +130,8 @@ resource "aws_cloudfront_function" "function" {
   code = templatefile(
     "${path.module}/function.tftpl",
     {
-      redirectable_domains = var.redirectable_domains
-      domain_name          = var.canonical_domain_name
+      redirectable_domains = module.records.redirects
+      domain_name          = var.primary_domain
     }
   )
   comment = "Directory serving index.html and subdomain redirection function for ${var.application}"
@@ -141,30 +141,28 @@ resource "aws_cloudfront_function" "function" {
 }
 
 # Route53
-resource "aws_route53_record" "a" {
-  count           = var.redirectable_domains == null ? 0 : length(var.redirectable_domains) == 0 ? 0 : 1
-  allow_overwrite = null
-  health_check_id = null
-  name            = var.route53_domain_name
-  set_identifier  = null
-  type            = "A"
-  zone_id         = data.aws_route53_zone.zone.id
-  alias {
-    evaluate_target_health = true
-    name                   = aws_cloudfront_distribution.distribution.domain_name
-    zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
+resource "aws_route53_record" "records" {
+  for_each = {
+    for zone_record in module.records.zones : "${zone_record.zone}_${zone_record.record}_${zone_record.record_type}" => zone_record
   }
-}
-
-resource "aws_route53_record" "cname" {
   allow_overwrite = null
   health_check_id = null
-  name            = var.canonical_domain_name
+  name            = each.value.record
   records         = [aws_cloudfront_distribution.distribution.domain_name]
   set_identifier  = null
   ttl             = local.ttl.short
-  type            = "CNAME"
-  zone_id         = data.aws_route53_zone.zone.id
+  type            = each.value.record_type
+  zone_id         = data.aws_route53_zone.zones[each.value.zone].id
+
+  dynamic "alias" {
+    for_each = [for v in each.value : v if lookup(each.value, "record_type", null) == "A"]
+
+    content {
+      evaluate_target_health = true
+      name                   = aws_cloudfront_distribution.distribution.domain_name
+      zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
+    }
+  }
 }
 
 # Data
@@ -174,8 +172,9 @@ data "aws_acm_certificate" "certificate" {
   domain = var.certificate_name
 }
 
-data "aws_route53_zone" "zone" {
-  name = var.route53_domain_name
+data "aws_route53_zone" "zones" {
+  for_each = module.records.mapped_zones
+  name     = each.key
 }
 
 data "aws_cloudfront_cache_policy" "disabled" {
@@ -184,4 +183,11 @@ data "aws_cloudfront_cache_policy" "disabled" {
 
 data "aws_cloudfront_cache_policy" "optimized" {
   name = "Managed-CachingOptimized"
+}
+
+# Records
+module "records" {
+  source  = "./modules/records"
+  primary = var.primary_domain
+  domains = var.domains
 }

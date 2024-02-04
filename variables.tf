@@ -11,12 +11,6 @@ variable "bucket_name" {
   nullable    = false
 }
 
-variable "canonical_domain_name" {
-  type        = string
-  description = "Deployed domain name, e.g. www.mybucket.com"
-  nullable    = false
-}
-
 variable "certificate_name" {
   type        = string
   description = "ACM certificate name, e.g. example.com"
@@ -29,35 +23,22 @@ variable "cloudfront_function_name" {
   nullable    = false
 }
 
-variable "domain_aliases" {
+variable "domains" {
   type        = list(string)
   description = <<-DOC
     List of domain name aliases for the site, e.g. ["mybucket.com", "my.bucket.com"].
-
-    This must contain at least the primary domain name for the site.
   DOC
   nullable    = false
 
   validation {
-    condition     = length(var.domain_aliases) > 0
+    condition     = length(var.domains) > 0
     error_message = "Must add at least one domain name alias"
   }
 }
 
-variable "redirectable_domains" {
-  type        = list(string)
-  description = <<-DOC
-    List of redirectable domains for the site, e.g. ["mybucket.com", "my.bucket.com"]
-
-    Not required if you are not doing apex redirection.
-  DOC
-  nullable    = true
-  default     = []
-}
-
-variable "route53_domain_name" {
+variable "primary_domain" {
   type        = string
-  description = "Hosted zone name for Route53, e.g. mybucket.com"
+  description = "Deployed domain name, e.g. www.mybucket.com"
   nullable    = false
 }
 

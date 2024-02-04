@@ -8,10 +8,10 @@ run "creates_infrastructure" {
 
   variables {
     bucket_name              = "flanger001-test-mybucket"
-    canonical_domain_name    = "test.daveshaffer.com"
-    domain_aliases           = ["test.daveshaffer.com"]
+    certificate_name         = "daveshaffer.com"
     cloudfront_function_name = "Flanger001-Test-MyFunction"
-    route53_domain_name      = "daveshaffer.com"
+    domains                  = ["test.daveshaffer.com"]
+    primary_domain           = "daveshaffer.com"
   }
 
   assert {
@@ -42,18 +42,8 @@ run "creates_infrastructure" {
   }
 
   assert {
-    condition     = aws_route53_record.cname.zone_id == data.aws_route53_zone.zone.id
-    error_message = "Route53 record not created in hosted zone"
-  }
-
-  assert {
-    condition     = aws_route53_record.cname.name == var.canonical_domain_name
-    error_message = "Route53 record name does not match given domain name"
-  }
-
-  assert {
     condition = contains(
-      aws_route53_record.cname.records,
+      aws_route53_record.records["daveshaffer.com_test.daveshaffer.com_CNAME"].records,
       aws_cloudfront_distribution.distribution.domain_name
     )
     error_message = "Route53 record value does not match Cloudfront distribution domain name"
