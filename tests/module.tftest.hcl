@@ -71,3 +71,20 @@ run "separates_a_records" {
     error_message = "Too many aliases"
   }
 }
+
+run "does_not_output_redirect_section_unnecessarily" {
+  command = plan
+
+  variables {
+    bucket_name              = "flanger001-test-mybucket"
+    certificate_name         = "daveshaffer.com"
+    cloudfront_function_name = "Flanger001-Test-MyFunction"
+    domains                  = ["test.daveshaffer.com"]
+    primary_domain           = "test.daveshaffer.com"
+  }
+
+  assert {
+    condition     = !strcontains(aws_cloudfront_function.function.code, "hostIsRedirectable")
+    error_message = "Function redirect section should not be written if there are no redirects"
+  }
+}

@@ -1,6 +1,6 @@
 function handler(event) {
     const request = event.request
-    %{if redirectable_domains != null}
+    %{if redirectable_domains != null && length(redirectable_domains) > 0}
     const redirectableDomains = [
 %{for domain in redirectable_domains ~}
         "${domain}",
