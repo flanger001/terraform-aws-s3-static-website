@@ -6,6 +6,7 @@ Input variables are documented in [`variables.tf`](variables.tf).
 
 This module will create these AWS resources:
 
+aws_route53_record.aliases
 - `aws_s3_bucket.bucket`
     This is required to host the site.
 - `aws_s3_bucket_policy.bucket_policy`
@@ -16,9 +17,9 @@ This module will create these AWS resources:
     This defines the routing rules for the origin on the distibution.
 - `aws_cloudfront_function.function`
     This enables serving an `index.html` file at the root of a directory URL as that URL (e.g. https://www.example.com/users/index.html is served as https://www.example.com/users/), as well as subdomain redirection.
-- `aws_route53_record.cname`
+- `aws_route53_record.records`
     This enables DNS lookup of the site.
-- `aws_route53_record.a` (optional, if `redirectable_domains` are supplied)
+- `aws_route53_record.aliases` (optional, if `var.domains` contains the TLD of the site)
     This enables apex redirection to another subdomain if desired, e.g. https://example.com/ -> https://www.example.com/
 
 This module depends on these AWS resources existing:
