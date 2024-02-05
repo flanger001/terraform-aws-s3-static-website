@@ -27,4 +27,4 @@ This module depends on these AWS resources existing:
 - An AWS account (`data.aws_caller_identity.account`).
 - A validated AWS ACM certificate (`data.aws_acm_certificate.certificate`)
     This is required for HTTPS.
-- A domain in an AWS Route53 hosted zone data (`data.aws_route53_zone.zone`).
+- A domain in an AWS Route53 hosted zone for each top-level domain you intend to use (`data.aws_route53_zone.zones`).
