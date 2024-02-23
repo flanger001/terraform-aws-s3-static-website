@@ -7,15 +7,15 @@ run "creates_infrastructure" {
   command = apply
 
   variables {
-    bucket_name              = "flanger001-test-mybucket"
+    bucket_name              = "flanger001-bucket-${substr(uuid(), 0, 13)}"
     certificate_name         = "daveshaffer.com"
-    cloudfront_function_name = "Flanger001-Test-MyFunction"
-    domains                  = ["test.daveshaffer.com"]
+    cloudfront_function_name = "Flanger001-function-${substr(uuid(), 0, 13)}"
+    domains                  = ["${substr(uuid(), 0, 13)}.daveshaffer.com"]
     primary_domain           = "daveshaffer.com"
   }
 
   assert {
-    condition     = aws_s3_bucket.bucket.bucket == "flanger001-test-mybucket"
+    condition     = aws_s3_bucket.bucket.bucket == var.bucket_name
     error_message = "Bucket did not persist name"
   }
 
@@ -43,7 +43,7 @@ run "creates_infrastructure" {
 
   assert {
     condition = contains(
-      aws_route53_record.records["daveshaffer.com_test.daveshaffer.com_CNAME"].records,
+      aws_route53_record.records["daveshaffer.com_${var.domains[0]}_CNAME"].records,
       aws_cloudfront_distribution.distribution.domain_name
     )
     error_message = "Route53 record value does not match Cloudfront distribution domain name"
@@ -54,9 +54,9 @@ run "separates_a_records" {
   command = plan
 
   variables {
-    bucket_name              = "flanger001-test-mybucket"
+    bucket_name              = "flanger001-bucket-${substr(uuid(), 0, 13)}"
     certificate_name         = "daveshaffer.com"
-    cloudfront_function_name = "Flanger001-Test-MyFunction"
+    cloudfront_function_name = "Flanger001-function-${substr(uuid(), 0, 13)}"
     domains = [
       "daveshaffer.co",
       "daveshaffer.com",
@@ -76,9 +76,9 @@ run "does_not_output_redirect_section_unnecessarily" {
   command = plan
 
   variables {
-    bucket_name              = "flanger001-test-mybucket"
+    bucket_name              = "flanger001-bucket-${substr(uuid(), 0, 13)}"
     certificate_name         = "daveshaffer.com"
-    cloudfront_function_name = "Flanger001-Test-MyFunction"
+    cloudfront_function_name = "Flanger001-function-${substr(uuid(), 0, 13)}"
     domains                  = ["test.daveshaffer.com"]
     primary_domain           = "test.daveshaffer.com"
   }
