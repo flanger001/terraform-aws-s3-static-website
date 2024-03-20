@@ -6,3 +6,11 @@ terraform {
     }
   }
 }
+
+provider "aws" {
+  default_tags {
+    Executor        = "Terraform"
+    ApplicationType = "S3 static website"
+    ApplicationHost = "AWS"
+  }
+}
