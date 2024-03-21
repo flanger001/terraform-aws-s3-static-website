@@ -43,6 +43,12 @@ variable "primary_domain" {
 }
 
 locals {
+  tags = {
+    Executor        = "Terraform"
+    ApplicationType = "S3 static website"
+    ApplicationHost = "AWS"
+  }
+
   ttl = {
     vshort  = 60
     short   = 300

@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "us-east-1"
-  profile = "current"
+  profile = "terraform"
 }
 
 run "creates_infrastructure" {

@@ -5,25 +5,28 @@ resource "aws_s3_bucket" "bucket" {
   object_lock_enabled = false
   bucket              = var.bucket_name
 
-  tags = {
-    Application = var.application
-  }
+  tags = merge(
+    local.tags,
+    {
+      Application = var.application
+    }
+  )
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = aws_s3_bucket.bucket.id
   policy = jsonencode({
-    Version   = "2008-10-17",
-    Id        = "PolicyForCloudFrontPrivateContent",
+    Version = "2008-10-17",
+    Id      = "PolicyForCloudFrontPrivateContent",
     Statement = [
       {
-        Sid       = "AllowCloudFrontServicePrincipal",
-        Effect    = "Allow",
+        Sid    = "AllowCloudFrontServicePrincipal",
+        Effect = "Allow",
         Principal = {
           Service = "cloudfront.amazonaws.com"
         },
-        Action    = "s3:GetObject",
-        Resource  = "${aws_s3_bucket.bucket.arn}/*",
+        Action   = "s3:GetObject",
+        Resource = "arn:aws:s3:::${aws_s3_bucket.bucket.id}/*",
         Condition = {
           StringEquals = {
             "AWS:SourceArn" = aws_cloudfront_distribution.distribution.arn
@@ -47,9 +50,19 @@ resource "aws_cloudfront_distribution" "distribution" {
   retain_on_delete                = false
   staging                         = false
 
-  tags = {
-    Application = var.application
-  }
+  tags = merge(
+    local.tags,
+    {
+      Application = var.application
+    }
+  )
+
+  tags_all = merge(
+    local.tags,
+    {
+      Application = var.application
+    }
+  )
 
   wait_for_deployment = true
   web_acl_id          = null
@@ -68,10 +81,10 @@ resource "aws_cloudfront_distribution" "distribution" {
     response_headers_policy_id = null
     smooth_streaming           = false
     # Note that target_origin_id must match origin.origin_id
-    target_origin_id           = var.application
-    trusted_key_groups         = []
-    trusted_signers            = []
-    viewer_protocol_policy     = "redirect-to-https"
+    target_origin_id       = var.application
+    trusted_key_groups     = []
+    trusted_signers        = []
+    viewer_protocol_policy = "redirect-to-https"
 
     function_association {
       event_type   = "viewer-request"
@@ -85,8 +98,8 @@ resource "aws_cloudfront_distribution" "distribution" {
     domain_name              = aws_s3_bucket.bucket.bucket_regional_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.access_control.id
     # Note that origin_id is a label
-    origin_id                = var.application
-    origin_path              = null
+    origin_id   = var.application
+    origin_path = null
   }
 
   restrictions {
