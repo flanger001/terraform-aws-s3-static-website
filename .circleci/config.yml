@@ -13,7 +13,7 @@ jobs:
       - aws-cli/setup:
           region: "${AWS_REGION}"
           role_arn: "${AWS_OIDC_ROLE_ARN}"
-          profile_name: "terraform"
+          profile_name: "current"
       - run:
           name: Install terraform
           command: |

@@ -1,6 +1,7 @@
 # Static Website
 
-This module creates the infrastructure for a static website hosted on AWS S3 behind a Cloudfront distribution with HTTPS and HTTP-to-HTTPS redirection. All routing is through Cloudfront, and as such this does not use the S3 Static Website configuration.
+This module creates the infrastructure for a static website hosted on AWS S3 behind a Cloudfront distribution with HTTPS and HTTP-to-HTTPS redirection. 
+All routing is through Cloudfront, and as such this does not use the S3 Static Website configuration.
 
 Input variables are documented in [`variables.tf`](variables.tf).
 
@@ -28,3 +29,19 @@ This module depends on these AWS resources existing:
 - A validated AWS ACM certificate (`data.aws_acm_certificate.certificate`)
     This is required for HTTPS.
 - A domain in an AWS Route53 hosted zone for each top-level domain you intend to use (`data.aws_route53_zone.zones`).
+
+## A note on tags
+
+In previous versions of this, there was a `local` variable `tags` that created 3 tags: 
+
+```terraform
+tags = {
+  Executor = "Terraform"
+  ApplicationType = "S3 static website"
+  ApplicationHost = "AWS"
+}
+```
+
+These were added to the `aws_s3_bucket.bucket` and `aws_cloudfront_distribution.distribution` resources, and merged with the `var.application` tag.
+The `local` variable is now gone. The `var.application` tag remains and will continue to tag these resources.
+To replace the tags previously supplied with `local`, simply provide a `default_tags` configuration with your `aws` provider.

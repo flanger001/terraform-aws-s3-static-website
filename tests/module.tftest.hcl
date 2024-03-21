@@ -1,12 +1,19 @@
 provider "aws" {
   region  = "us-east-1"
-  profile = "terraform"
+  profile = "current"
+
+  default_tags {
+    tags = {
+      Foo = "Bar"
+    }
+  }
 }
 
 run "creates_infrastructure" {
   command = apply
 
   variables {
+    application              = "Test Static Website"
     bucket_name              = "flanger001-bucket-${substr(uuid(), 0, 13)}"
     certificate_name         = "daveshaffer.com"
     cloudfront_function_name = "Flanger001-function-${substr(uuid(), 0, 13)}"
@@ -15,8 +22,18 @@ run "creates_infrastructure" {
   }
 
   assert {
-    condition     = aws_s3_bucket.bucket.bucket == var.bucket_name
-    error_message = "Bucket did not persist name"
+    condition = aws_s3_bucket.bucket.tags == tomap({
+      Application = var.application
+    })
+    error_message = "Bucket did not persist all tags"
+  }
+
+  assert {
+    condition = aws_s3_bucket.bucket.tags_all == tomap({
+      Application = var.application
+      Foo         = "Bar"
+    })
+    error_message = "Bucket did not persist all tags"
   }
 
   assert {

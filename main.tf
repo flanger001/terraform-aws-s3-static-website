@@ -5,12 +5,9 @@ resource "aws_s3_bucket" "bucket" {
   object_lock_enabled = false
   bucket              = var.bucket_name
 
-  tags = merge(
-    local.tags,
-    {
-      Application = var.application
-    }
-  )
+  tags = {
+    Application = var.application
+  }
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
@@ -50,19 +47,9 @@ resource "aws_cloudfront_distribution" "distribution" {
   retain_on_delete                = false
   staging                         = false
 
-  tags = merge(
-    local.tags,
-    {
-      Application = var.application
-    }
-  )
-
-  tags_all = merge(
-    local.tags,
-    {
-      Application = var.application
-    }
-  )
+  tags = {
+    Application = var.application
+  }
 
   wait_for_deployment = true
   web_acl_id          = null
